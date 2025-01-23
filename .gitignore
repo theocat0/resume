@@ -23,3 +23,7 @@ yarn-error.log*
 .env
 node_modules/
 .DS_Store
+
+# SSH Keys
+2134
+2134.pub
