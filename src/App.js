@@ -5,8 +5,11 @@ function App() {
   return (
     <div className="App">
       <header className="header">
-        <h1>Your Name</h1>
-        <p>Web Developer</p>
+        <h1>My Resume</h1>
+        <div>
+          <h2>Theodore Pasquier</h2>
+          <p>Web Developer</p>
+        </div>
       </header>
       
       <main>
@@ -44,6 +47,11 @@ function App() {
           <p>Email: your.email@example.com</p>
           <p>LinkedIn: linkedin.com/in/yourprofile</p>
           <p>GitHub: github.com/yourusername</p>
+        </section>
+
+        <section className="education">
+          <h2>Education</h2>
+          <p>Your School Name</p>
         </section>
       </main>
     </div>
