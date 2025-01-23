@@ -13,8 +13,9 @@ function App() {
         <section className="about">
           <h2>About Me</h2>
           <p>I'm a student at the University of New England, pursuing a Bachelor in Computer Science with a minor in Business. 
-          I'm passionate about building diverse and vibrant communities, demonstrated through co-founding and leading the UNE Fencing Team. 
-          I combine technical skills with leadership experience to make positive impacts in both academic and professional settings.</p>
+          I have hands-on experience working in the lab with the Robotics Team, where I assisted in developing and testing automated systems.
+          Additionally, I have experience beta testing ChatGPT, specifically the .3 model, and was part of the red team for the initial iterations of the 4 model and 4 Turbo.
+          I combine technical expertise with analytical skills to drive innovative solutions in both academic and professional environments.</p>
         </section>
 
         <section className="experience">
@@ -51,11 +52,11 @@ function App() {
         <section className="skills">
           <h2>Skills</h2>
           <div className="skills-grid">
-            <div className="skill">Networking</div>
-            <div className="skill">Event Planning</div>
-            <div className="skill">Project Management</div>
-            <div className="skill">Leadership</div>
-            <div className="skill">Community Building</div>
+            <div className="skill">Robotics</div>
+            <div className="skill">AI/ML Beta Testing</div>
+            <div className="skill">Red Team Operations</div>
+            <div className="skill">Automation</div>
+            <div className="skill">Data Analysis</div>
           </div>
         </section>
 

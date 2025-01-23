@@ -26,6 +26,7 @@ h2 {
   border-bottom: 2px solid #3498db;
   padding-bottom: 10px;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .job {
@@ -47,6 +48,8 @@ h2 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 15px;
+  justify-items: center;
+  text-align: center;
 }
 
 .skill {
@@ -55,6 +58,8 @@ h2 {
   padding: 10px;
   border-radius: 5px;
   text-align: center;
+  width: 100%;
+  max-width: 200px;
 }
 
 .contact {
@@ -66,4 +71,5 @@ h2 {
 
 .contact p {
   margin: 10px 0;
+  text-align: center;
 } 
