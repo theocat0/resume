@@ -1,16 +1,15 @@
 :root {
-  --terminal-green: #00ff00;
-  --terminal-dark: #1a1a1a;
-  --terminal-glow: 0 0 10px rgba(0, 255, 0, 0.2);
-  --scanline-size: 2px;
-  --monitor-border: #2c2c2c;
+  --primary-blue: #4285f4;
+  --primary-green: #34a853;
+  --primary-yellow: #fbbc05;
+  --primary-red: #ea4335;
 }
 
 body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  font-family: Arial, sans-serif;
+  font-family: 'Inter', Arial, sans-serif;
   background-color: #fff;
 }
 
@@ -28,13 +27,15 @@ body {
 
 .theo-logo {
   font-size: 90px;
-  font-weight: 400;
+  font-weight: 600;
   margin: 0;
-  background: linear-gradient(45deg, #4285f4, #34a853, #fbbc05, #ea4335);
+  background: linear-gradient(45deg, var(--primary-blue), var(--primary-green), var(--primary-yellow), var(--primary-red));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   letter-spacing: -2px;
+  background-size: 300% 300%;
+  animation: gradientShift 5s ease infinite;
 }
 
 .subtitle {
@@ -67,10 +68,15 @@ body {
 }
 
 .search-icon,
-.mic-icon {
+.mic-icon,
+.loading-icon {
   color: #9aa0a6;
   font-size: 20px;
   padding: 0 8px;
+}
+
+.loading-icon {
+  animation: spin 1s linear infinite;
 }
 
 .search-input {
@@ -106,6 +112,11 @@ body {
   background-color: #f8f9fa;
   border: 1px solid #dadce0;
   color: #202124;
+}
+
+.search-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .quick-links {
@@ -147,434 +158,10 @@ body {
   text-decoration: underline;
 }
 
-@media (max-width: 768px) {
-  .search-container {
-    padding-top: 10vh;
-    padding: 10vh 20px 0;
-  }
-
-  .theo-logo {
-    font-size: 64px;
-  }
-
-  .quick-links {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
-  }
-}
-
-/* Add a subtle animation to the logo */
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.theo-logo {
-  background-size: 300% 300%;
-  animation: gradientShift 5s ease infinite;
-}
-
-.App {
-  max-width: 1000px;
-  margin: 40px auto;
-  position: relative;
-  background: var(--monitor-border);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 
-    0 0 0 2px #444,
-    0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-/* Monitor Stand */
-.App::after {
-  content: '';
-  position: absolute;
-  bottom: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120px;
-  height: 60px;
-  background: linear-gradient(to bottom, #2c2c2c, #1a1a1a);
-  clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
-/* Monitor Base */
-.App::before {
-  content: '';
-  position: absolute;
-  bottom: -70px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 200px;
-  height: 15px;
-  background: linear-gradient(to bottom, #2c2c2c, #1a1a1a);
-  border-radius: 5px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Screen Content Container */
-.screen-content {
-  background: var(--terminal-dark);
-  padding: 20px;
-  border-radius: 5px;
-  position: relative;
-  overflow: hidden;
-  min-height: 80vh;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-/* Screen Glare Effect */
-.screen-content::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.03) 50%,
-    transparent 100%
-  );
-  animation: glare 10s infinite linear;
-  pointer-events: none;
-}
-
-/* Power Button */
-.power-button {
-  position: absolute;
-  right: 20px;
-  bottom: -40px;
-  width: 12px;
-  height: 12px;
-  background: #666;
-  border-radius: 50%;
-  border: 2px solid #444;
-  cursor: pointer;
-}
-
-.power-button::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 6px;
-  height: 6px;
-  background: #27c93f;
-  border-radius: 50%;
-  box-shadow: 0 0 5px #27c93f;
-}
-
-/* Mouse cursor image */
-.custom-cursor {
-  position: fixed;
-  width: 20px;
-  height: 20px;
-  pointer-events: none;
-  z-index: 9999;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="5" fill="%2300ff00"/></svg>');
-  mix-blend-mode: difference;
-}
-
-/* CRT Screen Effect */
-.App::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    transparent 50%,
-    rgba(0, 0, 0, 0.1) 50%
-  );
-  background-size: 100% 4px;
-  pointer-events: none;
-  animation: scanlines 1s linear infinite;
-}
-
-/* Terminal Window Header */
-.terminal-header {
-  background: #333;
-  padding: 10px;
-  border-radius: 10px 10px 0 0;
-  margin: -20px -20px 20px -20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.terminal-button {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #ff5f56;
-}
-
-.terminal-button:nth-child(2) {
-  background: #ffbd2e;
-}
-
-.terminal-button:nth-child(3) {
-  background: #27c93f;
-}
-
-.header {
-  text-align: left;
-  padding: 20px;
-  border: 1px solid var(--terminal-green);
-  margin-bottom: 30px;
-  position: relative;
-}
-
-.header::before {
-  content: "> User Profile";
-  position: absolute;
-  top: -10px;
-  left: 20px;
-  background: var(--terminal-dark);
-  padding: 0 10px;
-}
-
-.header h1 {
-  margin: 0;
-  font-size: 2.5rem;
-  color: var(--terminal-green);
-  text-shadow: var(--terminal-glow);
-}
-
-.header p {
-  margin: 10px 0 0 0;
-  font-size: 1.2rem;
-  opacity: 0.8;
-}
-
-section {
-  border: 1px solid var(--terminal-green);
-  padding: 25px;
-  margin-bottom: 25px;
-  position: relative;
-}
-
-section::before {
-  content: attr(data-section);
-  position: absolute;
-  top: -10px;
-  left: 20px;
-  background: var(--terminal-dark);
-  padding: 0 10px;
-  color: var(--terminal-green);
-  font-size: 0.9rem;
-}
-
-h2 {
-  color: var(--terminal-green);
-  margin-bottom: 20px;
-  font-size: 1.4rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-h2::before {
-  content: ">";
-  color: var(--terminal-green);
-}
-
-.job {
-  margin-bottom: 25px;
-  padding: 15px;
-  border: 1px dashed var(--terminal-green);
-}
-
-.job h3 {
-  color: var(--terminal-green);
-  margin-bottom: 10px;
-  font-size: 1.2rem;
-}
-
-.date {
-  color: #888;
-  font-size: 0.9rem;
-  margin-bottom: 15px;
-  display: inline-block;
-}
-
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 15px;
-}
-
-.skill {
-  border: 1px solid var(--terminal-green);
-  padding: 10px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.skill::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 2px;
-  background: var(--terminal-green);
-  animation: loading 2s linear infinite;
-}
-
-@keyframes loading {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-@keyframes scanlines {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(4px); }
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* Cursor effect */
-.cursor {
-  display: inline-block;
-  width: 8px;
-  height: 1em;
-  background: var(--terminal-green);
-  margin-left: 5px;
-  animation: blink 1s step-end infinite;
-}
-
-/* Terminal prompts */
-.prompt::before {
-  content: "$ ";
-  color: var(--terminal-green);
-}
-
-/* Links */
-a {
-  color: var(--terminal-green);
-  text-decoration: none;
-  position: relative;
-}
-
-a:hover {
-  text-shadow: var(--terminal-glow);
-}
-
-a::after {
-  content: "_";
-  animation: blink 1s step-end infinite;
-}
-
-/* Add responsive design improvements */
-@media (max-width: 768px) {
-  .header {
-    padding: 40px 20px;
-    margin: 0 auto 30px;
-  }
-  
-  .header h1 {
-    font-size: 2rem;
-  }
-  
-  section {
-    padding: 25px;
-  }
-  
-  .skills-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  }
-}
-
-/* Improve text readability */
-p, li {
-  line-height: 1.6;
-  color: #4a5568;
-}
-
-/* Add smooth scrolling */
-html {
-  scroll-behavior: smooth;
-  background-color: #f8fafc;
-}
-
-/* Selection color */
-::selection {
-  background: rgba(0, 180, 219, 0.2);
-  color: #1a202c;
-}
-
-@keyframes glare {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
-/* Desk Items */
-.desk-items {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100px;
-  pointer-events: none;
-}
-
-.coffee-mug {
-  position: fixed;
-  bottom: 40px;
-  right: 80px;
-  width: 60px;
-  height: 70px;
-  background: #fff;
-  border-radius: 5px 5px 25px 25px;
-  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.keyboard {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 600px;
-  height: 30px;
-  background: linear-gradient(to bottom, #e0e0e0, #cccccc);
-  border-radius: 5px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.mouse-pad {
-  position: fixed;
-  bottom: 20px;
-  right: 100px;
-  width: 200px;
-  height: 250px;
-  background: #333;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
 .answer-section {
   width: 100%;
   max-width: 584px;
   margin: 30px auto 0;
-  padding: 20px;
 }
 
 .answer-card {
@@ -592,6 +179,18 @@ html {
 
 .answer-header {
   margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-tag {
+  background-color: #f1f3f4;
+  color: #5f6368;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  text-transform: capitalize;
 }
 
 .result-count {
@@ -600,21 +199,28 @@ html {
 }
 
 .answer-text {
+  line-height: 1.5;
+  margin: 0;
   color: #202124;
   font-size: 16px;
-  line-height: 1.6;
-  margin: 0;
 }
 
-/* Update the existing I'm Feeling Lucky button to be more interactive */
-.search-button:last-child:hover {
-  background-color: #f1f3f4;
-  border-color: #dadce0;
+.cursor {
+  display: inline-block;
+  width: 2px;
+  background-color: #202124;
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+  vertical-align: baseline;
 }
 
-/* Add to your existing CSS */
-.loading-icon {
-  animation: spin 1s linear infinite;
+@keyframes blink {
+  from, to {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 @keyframes spin {
@@ -622,12 +228,190 @@ html {
   100% { transform: rotate(360deg); }
 }
 
-.search-input:disabled {
-  background-color: #f8f9fa;
-  cursor: not-allowed;
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-.search-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
+@media (max-width: 768px) {
+  .search-container {
+    padding: 10vh 20px 0;
+  }
+
+  .theo-logo {
+    font-size: 64px;
+  }
+
+  .quick-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .search-section,
+  .answer-section {
+    padding: 0 20px;
+  }
+}
+
+.mode-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-direction: row-reverse;
+}
+
+.toggle-label {
+  color: #5f6368;
+  font-size: 14px;
+  min-width: 85px;
+  text-align: right;
+}
+
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-blue);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--primary-blue);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.search-results-page {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.search-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #dfe1e5;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: var(--primary-blue);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.back-button:hover {
+  background-color: #f1f3f4;
+}
+
+.search-summary {
+  color: #5f6368;
+  font-size: 14px;
+}
+
+.search-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.result-card {
+  background: white;
+  border: 1px solid #dfe1e5;
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.result-card:hover {
+  box-shadow: 0 1px 6px rgba(32,33,36,.28);
+  border-color: transparent;
+}
+
+.result-category {
+  color: var(--primary-blue);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.result-title {
+  color: #1a0dab;
+  font-size: 18px;
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+
+.result-content {
+  color: #4d5156;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.result-confidence {
+  color: #70757a;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 } 
