@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import AIService from './services/AIService';
 
 function App() {
   const [query, setQuery] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+
+  useEffect(() => {
+    document.body.classList.toggle('dark', darkMode);
+  }, [darkMode]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,6 +64,17 @@ function App() {
 
   return (
     <div className="search-container">
+      <div className="mode-toggle">
+        <label className="toggle-label">Dark Mode</label>
+        <label className="switch">
+          <input
+            type="checkbox"
+            checked={darkMode}
+            onChange={(e) => setDarkMode(e.target.checked)}
+          />
+          <span className="slider round"></span>
+        </label>
+      </div>
       {!showSearchResults ? (
         <>
           <div className="logo-section">
