@@ -1,9 +1,5 @@
-import OpenAI from "openai";
-
 class AIService {
   constructor() {
-    this.isInitialized = false;
-    this.openai = null;
     this.customBlocks = [
       {
         id: 1,
@@ -83,68 +79,15 @@ class AIService {
         category: 'interests',
         title: 'Personal Interests',
         content: 'Beyond academics and professional pursuits, I enjoy exploring new AI tools, setting up productivity systems in Notion, and hiking in the scenic landscapes of Maine. I am also president in cofounder of the UNE fencing club.'
+      },
+      {
+        id: 14,
+        category: 'personal',
+        title: 'About Me',
+        content: "I'm Théo Pasquier, a Computer Science student at the University of New England and a Notion consultant passionate about productivity and AI."
       }
     ];
     
-    // Initialize OpenAI client with GitHub token for Azure endpoint
-    if (process.env.REACT_APP_GITHUB_TOKEN) {
-      this.client = new OpenAI({
-        baseURL: "https://models.inference.ai.azure.com",
-        apiKey: process.env.REACT_APP_GITHUB_TOKEN,
-        dangerouslyAllowBrowser: true
-      });
-      this.isInitialized = true;
-      console.log('AI Service initialized with GitHub token');
-    } else {
-      console.log('No GitHub token available, using fallback responses');
-    }
-    
-    // Add your resume information here in this context object
-    this.context = {
-      personal: {
-        name: "Your Name",
-        role: "Your Current Role",
-        location: "Your Location",
-        summary: "Brief summary about yourself"
-      },
-      education: [
-        {
-          degree: "Your Degree",
-          school: "School Name",
-          period: "Year - Year",
-          details: "Relevant coursework, achievements, GPA if notable"
-        }
-      ],
-      experience: [
-        {
-          role: "Job Title",
-          company: "Company Name",
-          period: "Start Date - End Date",
-          details: "Key responsibilities and achievements",
-          technologies: ["Tech1", "Tech2"]
-        }
-      ],
-      projects: [
-        {
-          name: "Project Name",
-          description: "Project description",
-          technologies: ["Tech1", "Tech2"],
-          link: "Project URL (if any)"
-        }
-      ],
-      skills: {
-        technical: ["Skill1", "Skill2"],
-        soft: ["Soft Skill1", "Soft Skill2"],
-        languages: ["Language1", "Language2"]
-      },
-      certifications: [
-        {
-          name: "Certification Name",
-          issuer: "Issuing Organization",
-          date: "Date Obtained"
-        }
-      ]
-    };
   }
 
   addCustomBlock(category, title, content) {
@@ -174,66 +117,22 @@ class AIService {
       }
     }
     
-    try {
-      if (!this.isInitialized) {
-        console.log('AI not initialized, using simple matching');
-        return this.simpleBlockSearch(query);
-      }
+    // Direct mappings for common questions
+    const directMappings = [
+      { phrases: ['who am i', 'who are you', 'your name', 'about you'], blockId: 14 },
+      { phrases: ['what are your skills'], blockId: 5 }
+    ];
 
-      // Use AI to classify and select the best matching blocks
-      const messages = [
-        {
-          role: "system",
-          content: `You are a classifier that will analyze a query and select the most relevant information blocks from the following options. 
-          Here are the available blocks:
-          ${JSON.stringify(this.customBlocks.filter(block => block.category !== 'greeting'), null, 2)}
-          
-          Instructions:
-          - Analyze the semantic meaning and intent of the query
-          - Consider context, synonyms, and related concepts
-          - Return a JSON array of block IDs, ordered by relevance
-          - Include only truly relevant blocks (max 2)
-          - If no blocks are relevant, return []
-          - For Notion-related queries, prioritize blocks about Notion experience
-          
-          Example response format:
-          [1] or [2,5] or []`
-        },
-        {
-          role: "user",
-          content: query
+    for (const mapping of directMappings) {
+      if (mapping.phrases.some(p => query.includes(p))) {
+        const block = this.customBlocks.find(b => b.id === mapping.blockId);
+        if (block) {
+          return [{ ...block, confidence: 100 }];
         }
-      ];
-
-      const completion = await this.client.chat.completions.create({
-        messages,
-        model: "gpt-4o",
-        temperature: 0,
-        max_tokens: 50
-      });
-
-      const response = completion.choices[0]?.message?.content || '[]';
-      const selectedIds = JSON.parse(response);
-      console.log('AI selected block IDs:', selectedIds);
-
-      if (selectedIds.length === 0) {
-        return [];
       }
-
-      // Map selected blocks with confidence scores
-      return selectedIds.map((id, index) => {
-        const block = this.customBlocks.find(b => b.id === id);
-        if (!block) return null;
-        return {
-          ...block,
-          confidence: index === 0 ? 100 : 85 // Primary match 100%, secondary match 85%
-        };
-      }).filter(Boolean);
-
-    } catch (error) {
-      console.error('Error in AI classification:', error);
-      return this.simpleBlockSearch(query);
     }
+
+    return this.simpleBlockSearch(query);
   }
 
   simpleBlockSearch(query) {
