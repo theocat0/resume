@@ -87,7 +87,30 @@ class AIService {
         content: "I'm Théo Pasquier, a Computer Science student at the University of New England and a Notion consultant passionate about productivity and AI."
       }
     ];
-    
+
+    this.synonyms = {
+      greeting: ['hi', 'hello', 'hey', 'greetings'],
+      education: ['school', 'college', 'university', 'studies', 'degree'],
+      experience: ['background', 'career', 'work', 'history'],
+      skills: ['abilities', 'expertise', 'proficiency'],
+      projects: ['portfolio', 'works', 'assignments'],
+      contact: ['email', 'phone', 'reach', 'connect'],
+      personal: ['bio', 'about'],
+      awards: ['honors', 'achievements', 'recognition'],
+      volunteering: ['volunteer', 'service', 'community'],
+      interests: ['hobbies', 'passions', 'activities']
+    };
+
+    this.synonymMap = {};
+    Object.entries(this.synonyms).forEach(([key, list]) => {
+      this.synonymMap[key] = key;
+      list.forEach(word => {
+        this.synonymMap[word] = key;
+      });
+    });
+
+    this.buildIndex();
+
   }
 
   addCustomBlock(category, title, content) {
@@ -99,6 +122,32 @@ class AIService {
       content
     });
     console.log('Added new block:', { category, title });
+    this.buildIndex();
+  }
+
+  buildIndex() {
+    const df = {};
+    this.blocksData = this.customBlocks.map(block => {
+      const text = (
+        block.title + ' ' + block.content + ' ' + block.category
+      ).toLowerCase();
+      const tokens = text.match(/\b[a-z]+\b/g) || [];
+      const normalized = tokens.map(t => this.synonymMap[t] || t);
+      const tf = {};
+      normalized.forEach(tok => {
+        tf[tok] = (tf[tok] || 0) + 1;
+      });
+      Object.keys(tf).forEach(tok => {
+        df[tok] = (df[tok] || 0) + 1;
+      });
+      return { block, text, tf };
+    });
+
+    const totalDocs = this.blocksData.length;
+    this.idf = {};
+    Object.entries(df).forEach(([tok, count]) => {
+      this.idf[tok] = Math.log((totalDocs + 1) / (count + 1)) + 1;
+    });
   }
 
   async searchBlocks(query) {
@@ -139,57 +188,69 @@ class AIService {
 
   simpleBlockSearch(query, options = {}) {
     const { excludeGreeting = false } = options;
-    // Fallback to simple keyword matching if AI fails
-    let results = this.customBlocks.map(block => {
-      const score = this.calculateRelevanceScore(query, block);
-      return {
-        ...block,
-        confidence: Math.round(score * 100)
-      };
+    const tokens = query.toLowerCase().match(/\b[a-z]+\b/g) || [];
+    const expanded = [];
+    tokens.forEach(t => {
+      expanded.push(t);
+      if (this.synonymMap[t] && this.synonymMap[t] !== t) {
+        expanded.push(this.synonymMap[t]);
+      }
     });
 
-    if (excludeGreeting) {
-      results = results.filter(r => r.category !== 'greeting');
-    }
+    let results = this.blocksData.map(data => {
+      if (excludeGreeting && data.block.category === 'greeting') return null;
+      const score = this.calculateRelevanceScore(expanded, data);
+      return {
+        ...data.block,
+        confidence: Math.round(score * 100)
+      };
+    }).filter(Boolean);
 
     return results
       .filter(result => result.confidence > 30)
       .sort((a, b) => b.confidence - a.confidence);
   }
 
-  calculateRelevanceScore(query, block) {
-    const keywords = query.toLowerCase().split(' ').filter(word => word.length > 2);
-    const blockText = (block.title + ' ' + block.content + ' ' + block.category).toLowerCase();
-    
+  calculateRelevanceScore(tokens, data) {
     let score = 0;
-    let matches = 0;
-
-    // Check for exact phrase match
-    if (blockText.includes(query)) {
-      score += 0.5;
-    }
-
-    // Check for keyword matches
-    keywords.forEach(keyword => {
-      if (blockText.includes(keyword)) {
-        matches++;
-        // Title matches are more important
-        if (block.title.toLowerCase().includes(keyword)) {
-          score += 0.3;
-        }
-        // Category matches are also important
-        if (block.category.toLowerCase().includes(keyword)) {
-          score += 0.2;
-        }
+    tokens.forEach(tok => {
+      if (data.tf[tok]) {
+        score += data.tf[tok] * (this.idf[tok] || 0);
       }
     });
 
-    // Calculate keyword coverage
-    const keywordCoverage = keywords.length > 0 ? matches / keywords.length : 0;
-    score += keywordCoverage;
+    const fuzzy = this.stringSimilarity(tokens.join(' '), data.text);
+    score += fuzzy * 0.3;
 
-    // Normalize score to be between 0 and 1
     return Math.min(Math.max(score, 0), 1);
+  }
+
+  stringSimilarity(a, b) {
+    if (!a || !b) return 0;
+    const distance = this.levenshteinDistance(a, b);
+    const maxLen = Math.max(a.length, b.length);
+    return maxLen === 0 ? 1 : 1 - distance / maxLen;
+  }
+
+  levenshteinDistance(a, b) {
+    const matrix = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
+    for (let i = 0; i <= a.length; i++) {
+      matrix[i][0] = i;
+    }
+    for (let j = 0; j <= b.length; j++) {
+      matrix[0][j] = j;
+    }
+    for (let i = 1; i <= a.length; i++) {
+      for (let j = 1; j <= b.length; j++) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j - 1] + cost
+        );
+      }
+    }
+    return matrix[a.length][b.length];
   }
 }
 
