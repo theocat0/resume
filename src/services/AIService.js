@@ -132,18 +132,25 @@ class AIService {
       }
     }
 
-    return this.simpleBlockSearch(query);
+    // For all other queries run the keyword matcher but ignore the greeting
+    // block so it doesn't appear as the top result every time
+    return this.simpleBlockSearch(query, { excludeGreeting: true });
   }
 
-  simpleBlockSearch(query) {
+  simpleBlockSearch(query, options = {}) {
+    const { excludeGreeting = false } = options;
     // Fallback to simple keyword matching if AI fails
-    const results = this.customBlocks.map(block => {
+    let results = this.customBlocks.map(block => {
       const score = this.calculateRelevanceScore(query, block);
       return {
         ...block,
         confidence: Math.round(score * 100)
       };
     });
+
+    if (excludeGreeting) {
+      results = results.filter(r => r.category !== 'greeting');
+    }
 
     return results
       .filter(result => result.confidence > 30)
